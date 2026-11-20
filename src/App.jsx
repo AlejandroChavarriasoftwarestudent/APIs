@@ -1,43 +1,23 @@
-import { useEffect, useState } from "react"
 import "./App.css"
 
-// PASO 4. Importa axios
+// PASO 3. Importa useEffect y useState desde "react"
 
-const URL_ARTICULOS = "https://api.spaceflightnewsapi.net/v4/articles/?limit=6"
+// PASO 3. Importa axios
 
-// PASO 4. Crea la constante URL_GEMINI
+// PASO 5. Importa GoogleGenAI desde "@google/genai"
+
+// PASO 3. Crea la constante URL_ARTICULOS
 
 function App() {
-  const [articulos, setArticulos] = useState([])
-  const [cargando, setCargando] = useState(true)
-  const [error, setError] = useState("")
-  const [seleccionado, setSeleccionado] = useState(null)
+  // PASO 3. Crea los estados articulos, cargando, error y seleccionado
 
-  // PASO 4. Crea los estados pregunta, respuesta y consultando
+  // PASO 5. Crea los estados pregunta, respuesta y consultando
 
-  useEffect(() => {
-    cargarArticulos()
-  }, [])
+  // PASO 3. Llama a cargarArticulos cuando la página abre
 
-  async function cargarArticulos() {
-    try {
-      setCargando(true)
-      setError("")
-      const respuestaHttp = await fetch(URL_ARTICULOS)
-      if (!respuestaHttp.ok) {
-        throw new Error("No se pudieron cargar las noticias")
-      }
-      const datos = await respuestaHttp.json()
-      setArticulos(datos.results)
-    } catch (err) {
-      setError("No hubo conexión con el API de noticias. Revisa tu internet.")
-      console.error(err)
-    } finally {
-      setCargando(false)
-    }
-  }
+  // PASO 3. Escribe la función cargarArticulos con axios
 
-  // PASO 4. Escribe la función preguntar
+  // PASO 5. Escribe la función preguntar con GoogleGenAI
 
   return (
     <div className="pagina">
@@ -52,61 +32,30 @@ function App() {
         <p>Elige una noticia y pregúntale a Gemini.</p>
       </header>
 
-      {error && <p className="aviso">{error}</p>}
+      {/* PASO 3. Muestra el error, si existe */}
 
       <main className="contenido">
         <section>
           <h2>Artículos</h2>
-          {cargando && <p>Cargando noticias...</p>}
+          {/* PASO 3. Si cargando es true, muestra "Cargando noticias..." */}
           <ul className="lista">
-            {articulos.map((articulo) => (
-              <li key={articulo.id}>
-                <button
-                  type="button"
-                  className={seleccionado?.id === articulo.id ? "tarjeta activa" : "tarjeta"}
-                  onClick={() => setSeleccionado(articulo)}
-                >
-                  {articulo.image_url && <img src={articulo.image_url} alt="" />}
-                  <span className="medio">{articulo.news_site}</span>
-                  <strong>{articulo.title}</strong>
-                  <span className="fecha">{formatearFecha(articulo.published_at)}</span>
-                </button>
-              </li>
-            ))}
+            {/* PASO 3. Recorre articulos y pinta cada tarjeta */}
           </ul>
         </section>
 
         <aside className="panel">
           <h2>Pregunta a Gemini</h2>
-          {seleccionado ? (
-            <>
-              <h3>{seleccionado.title}</h3>
-              <p>{seleccionado.summary}</p>
-              <a href={seleccionado.url} target="_blank" rel="noreferrer">
-                Leer la noticia completa
-              </a>
-            </>
-          ) : (
-            <p>Selecciona un artículo de la lista.</p>
-          )}
+          {/* PASO 3. Muestra la noticia elegida o "Selecciona un artículo de la lista." */}
 
-          {/* PASO 4. Formulario de la pregunta */}
+          {/* PASO 5. Formulario de la pregunta */}
 
-          {/* PASO 4. Párrafo con la respuesta */}
+          {/* PASO 5. Párrafo con la respuesta */}
         </aside>
       </main>
     </div>
   )
 }
 
-// PASO 4. Escribe la función leerTexto
-
-function formatearFecha(fecha) {
-  return new Date(fecha).toLocaleDateString("es-CO", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  })
-}
+// PASO 3. Escribe la función formatearFecha
 
 export default App
