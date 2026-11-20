@@ -9,27 +9,42 @@
 Escribe aquí el nombre completo de cada estudiante. Con esta sección se identifica la entrega.
 
 - 
-
 - 
 
 **No hay necesidad de usar IA. Solo hay que seguir los pasos de este laboratorio.**
 
 ## Objetivo
 
-Consumir dos APIs en una aplicación React: Spaceflight News con Axios para listar noticias espaciales, y Gemini con la librería `@google/genai` para preguntar sobre la noticia seleccionada.
+Consumir dos APIs en una aplicación React, cada una en su propio componente:
+
+- `ListaNoticias`: Spaceflight News con Axios
+- `PreguntaGemini`: Gemini con `@google/genai`
 
 | Tiempo | Qué hacemos |
 | --- | --- |
 | 0:00 – 0:08 | Hacer fork o clonar, e instalar el proyecto |
 | 0:08 – 0:15 | Revisar el JSON de Spaceflight News |
 | 0:15 – 0:20 | Instalar Axios |
-| 0:20 – 0:40 | Construir el consumo de noticias con Axios |
+| 0:20 – 0:40 | Completar `ListaNoticias` |
 | 0:40 – 0:48 | Crear la llave de Gemini y guardarla |
 | 0:48 – 0:52 | Instalar `@google/genai` |
-| 0:52 – 1:08 | Construir el consumo de Gemini |
+| 0:52 – 1:08 | Completar `PreguntaGemini` |
 | 1:08 – 1:15 | Probar, escribir nombres y subir |
 
-`src/App.jsx` está sin resolver. Cada comentario `PASO 3` o `PASO 5` es un hueco: bórralo y pega ahí el código de ese punto. Los estilos de `src/App.css` ya están listos.
+## Cómo está organizada la app
+
+`src/App.jsx` ya está armado. Solo junta las piezas:
+
+1. Guarda la noticia elegida en `seleccionado`.
+2. Pasa esa noticia a `ListaNoticias` y a `PreguntaGemini`.
+3. Cuando alguien hace clic en una tarjeta, `ListaNoticias` llama a `onSeleccionar`.
+
+Tú no tocas `App.jsx`. Trabajas en estos archivos:
+
+- Paso 3 → `src/components/ListaNoticias.jsx`
+- Paso 5 → `src/components/PreguntaGemini.jsx`
+
+Cada comentario `PASO 3` o `PASO 5` es un hueco: bórralo y pega ahí el código. Los estilos de `src/App.css` ya están listos.
 
 ## Paso 0. Traer el proyecto
 
@@ -62,7 +77,7 @@ npm install
 git remote set-url origin PEGA_AQUI_LA_URL_DE_TU_REPOSITORIO
 ```
 
-Abre `src/App.jsx`. Verás el encabezado y los comentarios. Todavía no hay lista ni pregunta.
+Abre la app. Verás el encabezado y dos zonas vacías: artículos y pregunta a Gemini.
 
 ## Paso 1. Revisar el JSON de Spaceflight News
 
@@ -109,40 +124,42 @@ npm install axios
 
 Axios pide APIs y deja el JSON listo en `respuesta.data`. Si el API responde con error, Axios entra al `catch`.
 
-## Paso 3. Consumir Spaceflight News con Axios
+## Paso 3. Completar `ListaNoticias` con Axios
 
-Sigue en `src/App.jsx`. En cada punto, borra el comentario `PASO 3` y deja el código.
+Abre `src/components/ListaNoticias.jsx`. Este componente recibe dos props:
 
-**Importa los hooks.** Reemplaza el comentario del import de React:
+- `seleccionado`: la noticia que está marcada
+- `onSeleccionar`: función para avisarle a `App` cuál se eligió
+
+En cada punto, borra el comentario `PASO 3` y deja el código.
+
+**Importa los hooks:**
 
 ```jsx
 import { useEffect, useState } from "react"
 ```
 
-Deja el `import "./App.css"` que ya está.
-
-**Importa Axios.** Reemplaza el comentario de axios:
+**Importa Axios:**
 
 ```jsx
 import axios from "axios"
 ```
 
-**Dirección del API.** Reemplaza el comentario de `URL_ARTICULOS`:
+**Dirección del API:**
 
 ```jsx
 const URL_ARTICULOS = "https://api.spaceflightnewsapi.net/v4/articles/?limit=6"
 ```
 
-**Estados.** Reemplaza el comentario de los estados de noticias:
+**Estados**, dentro de `ListaNoticias`:
 
 ```jsx
 const [articulos, setArticulos] = useState([])
 const [cargando, setCargando] = useState(true)
 const [error, setError] = useState("")
-const [seleccionado, setSeleccionado] = useState(null)
 ```
 
-**Carga al abrir.** Reemplaza el comentario de `useEffect`:
+**Carga al abrir:**
 
 ```jsx
 useEffect(() => {
@@ -150,7 +167,7 @@ useEffect(() => {
 }, [])
 ```
 
-**Pedir las noticias con Axios.** Reemplaza el comentario de `cargarArticulos`:
+**Pedir las noticias con Axios:**
 
 ```jsx
 async function cargarArticulos() {
@@ -170,7 +187,7 @@ async function cargarArticulos() {
 
 Con Axios el JSON llega en `respuesta.data`. Por eso la lista es `respuesta.data.results`.
 
-**Fecha.** Fuera de `App`, reemplaza el comentario de `formatearFecha`:
+**Fecha**, fuera del componente:
 
 ```jsx
 function formatearFecha(fecha) {
@@ -182,19 +199,19 @@ function formatearFecha(fecha) {
 }
 ```
 
-**Aviso de error.** Dentro del `return`, reemplaza el comentario del error:
+**Aviso de error:**
 
 ```jsx
 {error && <p className="aviso">{error}</p>}
 ```
 
-**Texto de carga.** Reemplaza el comentario de "Cargando noticias...":
+**Texto de carga:**
 
 ```jsx
 {cargando && <p>Cargando noticias...</p>}
 ```
 
-**Tarjetas.** Dentro de `<ul className="lista">`, reemplaza el comentario de las tarjetas:
+**Tarjetas**, dentro de `<ul className="lista">`:
 
 ```jsx
 {articulos.map((articulo) => (
@@ -202,7 +219,7 @@ function formatearFecha(fecha) {
     <button
       type="button"
       className={seleccionado?.id === articulo.id ? "tarjeta activa" : "tarjeta"}
-      onClick={() => setSeleccionado(articulo)}
+      onClick={() => onSeleccionar(articulo)}
     >
       {articulo.image_url && <img src={articulo.image_url} alt="" />}
       <span className="medio">{articulo.news_site}</span>
@@ -213,28 +230,12 @@ function formatearFecha(fecha) {
 ))}
 ```
 
-**Panel de la noticia.** Dentro del `<aside>`, reemplaza el comentario de la noticia elegida:
-
-```jsx
-{seleccionado ? (
-  <>
-    <h3>{seleccionado.title}</h3>
-    <p>{seleccionado.summary}</p>
-    <a href={seleccionado.url} target="_blank" rel="noreferrer">
-      Leer la noticia completa
-    </a>
-  </>
-) : (
-  <p>Selecciona un artículo de la lista.</p>
-)}
-```
-
-Los comentarios `PASO 5` se quedan quietos hasta más adelante.
+El clic llama a `onSeleccionar(articulo)`. Así `App` guarda la noticia y se la pasa a `PreguntaGemini`.
 
 **Comprueba antes de seguir:**
 
 - La página muestra 6 noticias con título, medio y fecha.
-- Al hacer clic, el panel derecho muestra el resumen y el enlace.
+- Al hacer clic, la tarjeta queda marcada.
 
 ## Paso 4. Crear la llave de Gemini
 
@@ -254,7 +255,7 @@ VITE_GEMINI_API_KEY=AIza_tu_llave
 
 El nombre empieza por `VITE_` para que React pueda leerla. Si `npm run dev` ya estaba abierto, detenlo y vuélvelo a iniciar.
 
-## Paso 5. Instalar la librería de Gemini y consumirla
+## Paso 5. Completar `PreguntaGemini` con `@google/genai`
 
 En la terminal del proyecto:
 
@@ -277,23 +278,39 @@ const interaction = await ai.interactions.create({
 console.log(interaction.output_text)
 ```
 
-Ahora pégalo en tu página, adaptado a la noticia elegida. Sigue en `src/App.jsx`.
+Abre `src/components/PreguntaGemini.jsx`. Este componente recibe `seleccionado`: la noticia que eligió el estudiante.
 
-**Import.** Reemplaza el comentario de `GoogleGenAI`:
+**Importa los hooks:**
+
+```jsx
+import { useEffect, useState } from "react"
+```
+
+**Importa Gemini:**
 
 ```jsx
 import { GoogleGenAI } from "@google/genai"
 ```
 
-**Estados.** Reemplaza el comentario de `pregunta`, `respuesta` y `consultando`:
+**Estados:**
 
 ```jsx
 const [pregunta, setPregunta] = useState("Explícame esta noticia en palabras sencillas")
 const [respuesta, setRespuesta] = useState("")
 const [consultando, setConsultando] = useState(false)
+const [error, setError] = useState("")
 ```
 
-**Función.** Reemplaza el comentario de `preguntar`:
+**Limpiar al cambiar de noticia:**
+
+```jsx
+useEffect(() => {
+  setRespuesta("")
+  setError("")
+}, [seleccionado?.id])
+```
+
+**Función `preguntar`:**
 
 ```jsx
 async function preguntar(evento) {
@@ -342,7 +359,29 @@ async function preguntar(evento) {
 }
 ```
 
-**Formulario.** Dentro del `<aside>`, reemplaza el comentario del formulario:
+**Aviso de error:**
+
+```jsx
+{error && <p className="aviso">{error}</p>}
+```
+
+**Noticia elegida:**
+
+```jsx
+{seleccionado ? (
+  <>
+    <h3>{seleccionado.title}</h3>
+    <p>{seleccionado.summary}</p>
+    <a href={seleccionado.url} target="_blank" rel="noreferrer">
+      Leer la noticia completa
+    </a>
+  </>
+) : (
+  <p>Selecciona un artículo de la lista.</p>
+)}
+```
+
+**Formulario:**
 
 ```jsx
 <form onSubmit={preguntar}>
@@ -359,7 +398,7 @@ async function preguntar(evento) {
 </form>
 ```
 
-**Respuesta.** Reemplaza el comentario del párrafo:
+**Respuesta:**
 
 ```jsx
 {respuesta && (
@@ -370,16 +409,6 @@ async function preguntar(evento) {
 )}
 ```
 
-**Al cambiar de noticia.** En la tarjeta del Paso 3, cambia el `onClick` por este:
-
-```jsx
-onClick={() => {
-  setSeleccionado(articulo)
-  setRespuesta("")
-  setError("")
-}}
-```
-
 ## Paso 6. Probar
 
 1. Elige una noticia.
@@ -387,7 +416,7 @@ onClick={() => {
 3. Debe aparecer un párrafo sobre esa noticia.
 4. Elige otra noticia: la respuesta anterior desaparece.
 
-En F12 → **Red** quedan las dos peticiones: `articles` con Axios y la llamada a Gemini con `@google/genai`.
+En F12 → **Red** quedan las dos peticiones: `articles` desde `ListaNoticias` y la llamada a Gemini desde `PreguntaGemini`.
 
 ## Paso 7. Marcar la entrega y subirla
 
@@ -397,11 +426,11 @@ En F12 → **Red** quedan las dos peticiones: `articles` con Axios y la llamada 
 
 ```bash
 git add .
-git commit -m "Consumo de Spaceflight con Axios y Gemini con @google/genai"
+git commit -m "ListaNoticias con Axios y PreguntaGemini con @google/genai"
 git push -u origin HEAD
 ```
 
-4. Abre tu repositorio en GitHub y comprueba que se vean los nombres al inicio de `LABORATORIO.md` y los cambios de `src/App.jsx`.
+4. Abre tu repositorio en GitHub y comprueba que se vean los nombres al inicio de `LABORATORIO.md` y los cambios en `src/components/`.
 5. Copia la URL de **tu** repositorio y envíala por el medio que indique el docente.
 
 Si el `push` pide usuario y contraseña, usa tu usuario de GitHub. La contraseña de la cuenta no sirve: GitHub pide un token personal, o puedes subir desde GitHub Desktop.
@@ -410,15 +439,16 @@ Si el `push` pide usuario y contraseña, usa tu usuario de GitHub. La contraseñ
 
 | Lo que ves | Qué revisar |
 | --- | --- |
-| `axios is not defined` | El import y que `npm install axios` haya terminado. |
-| `GoogleGenAI is not defined` | El import y que `npm install @google/genai` haya terminado. |
+| `axios is not defined` | El import en `ListaNoticias.jsx` y que `npm install axios` haya terminado. |
+| `GoogleGenAI is not defined` | El import en `PreguntaGemini.jsx` y que `npm install @google/genai` haya terminado. |
 | La lista nunca carga | La URL, tu internet y que uses `respuesta.data.results`. |
+| Al hacer clic no pasa nada en el panel | Que el `onClick` llame a `onSeleccionar(articulo)`. |
 | "Falta la llave en el archivo .env" | La variable se llama `VITE_GEMINI_API_KEY` y reiniciaste `npm run dev`. |
 | `API key not valid` | La llave va completa, sin espacios ni comillas. |
 | El modelo no existe | En AI Studio abre **Get code** y copia el nombre del modelo dentro de `interactions.create`. |
 
 ## Preguntas de salida
 
-1. Con Axios, ¿en qué propiedad llega el JSON de las noticias?
-2. ¿Qué librería usamos para hablar con Gemini?
-3. ¿Qué datos de la noticia viajan dentro de `prompt`?
+1. ¿Qué prop usa `ListaNoticias` para avisarle a `App` cuál noticia se eligió?
+2. Con Axios, ¿en qué propiedad llega el JSON de las noticias?
+3. ¿En qué archivo queda el consumo de Gemini?
